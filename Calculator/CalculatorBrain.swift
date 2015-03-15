@@ -36,19 +36,22 @@ class CalculatorBrain
     private var knownOps = [String:Op]()
 
     init() {
-        // TODO: Homwwork2: Finish it and figure out why.
-//        func learnOp(op: Op) {
-//            knownOps[op.description] = op
-//        }
-//        learnOp(Op.BinaryOperation("×", *))
+        func learnOp(op: Op) {
+            knownOps[op.description] = op
+        }
+        learnOp(Op.BinaryOperation("×", *))
+        learnOp(Op.BinaryOperation("÷") { $1 / $0 })
+        learnOp(Op.BinaryOperation("+", +))
+        learnOp(Op.BinaryOperation("−") { $1 - $0 })
+        learnOp(Op.UnaryOperation("√", sqrt))
 
-//        knownOps["×"] = Op.BinaryOperation("×", { $0 * $1 })
-//        knownOps["×"] = Op.BinaryOperation("×") { $0 * $1 }
-        knownOps["×"] = Op.BinaryOperation("×", *)
-        knownOps["÷"] = Op.BinaryOperation("÷") { $1 / $0 }
-        knownOps["+"] = Op.BinaryOperation("+", +)
-        knownOps["−"] = Op.BinaryOperation("−") { $1 - $0 }
-        knownOps["√"] = Op.UnaryOperation("√", sqrt)
+////        knownOps["×"] = Op.BinaryOperation("×", { $0 * $1 })
+////        knownOps["×"] = Op.BinaryOperation("×") { $0 * $1 }
+//        knownOps["×"] = Op.BinaryOperation("×", *)
+//        knownOps["÷"] = Op.BinaryOperation("÷") { $1 / $0 }
+//        knownOps["+"] = Op.BinaryOperation("+", +)
+//        knownOps["−"] = Op.BinaryOperation("−") { $1 - $0 }
+//        knownOps["√"] = Op.UnaryOperation("√", sqrt)
     }
 
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
