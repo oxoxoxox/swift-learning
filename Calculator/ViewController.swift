@@ -14,6 +14,8 @@ class CalculatorViewController: UIViewController
 
     var userIsInTheMiddleOfTypingANumber = false
 
+    var brain = CalculatorBrain()
+
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
@@ -25,47 +27,32 @@ class CalculatorViewController: UIViewController
     }
 
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
-        switch operation {
-//        case "×": preformOperation({ (op1, op2) in return op1 * op2 })
-//        case "×": preformOperation({ $0 * $1 })
-        case "×": preformOperation { $0 * $1 }
-        case "÷": preformOperation { $1 / $0 }
-        case "+": preformOperation { $0 + $1 }
-        case "−": preformOperation { $1 - $0 }
-        case "√": preformOperation { sqrt($0) }
-        default: break
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+                displayValue = result
+            } else {
+                // TODO: Homework 2: Let displayValue to be optional so that UI can display error info.
+                displayValue = 0
+            }
         }
     }
-
-    func preformOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-
-    func preformOperation(operation: Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-        }
-    }
-
-    var operandStack = Array<Double>()
 
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue)
-        println("operandStack = \(operandStack)")
+        if let result = brain.pushOperand(displayValue) {
+            displayValue = result
+        } else {
+            // TODO: Homework 2: Let displayValue to be optional so that UI can display error info.
+            displayValue = 0
+        }
     }
 
     var displayValue: Double {
         get {
-            // FixMe!
+            // TODO: Homework 1: What's this?
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
         }
         set {
