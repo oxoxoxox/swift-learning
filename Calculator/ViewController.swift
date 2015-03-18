@@ -12,16 +12,32 @@ class CalculatorViewController: UIViewController
 {
     @IBOutlet weak var display: UILabel!
 
+    @IBOutlet weak var historyDisplay: UILabel!
+
     var userIsInTheMiddleOfTypingANumber = false
+    var haveADotInANumber = false
 
     var brain = CalculatorBrain()
 
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
-            display.text = display.text! + digit
+            if digit == "." {
+                if !haveADotInANumber {
+                    display.text = display.text! + digit
+                    haveADotInANumber = true
+                }
+            } else {
+                display.text = display.text! + digit
+            }
         } else {
-            display.text = digit
+            if digit == "." {
+                // In case user input number like this: .24 (Which should be 0.24)
+                display.text = "0" + digit
+                haveADotInANumber = true
+            } else {
+                display.text = digit
+            }
             userIsInTheMiddleOfTypingANumber = true
         }
     }
@@ -37,11 +53,13 @@ class CalculatorViewController: UIViewController
                 // TODO: Homework 2: Let displayValue to be optional so that UI can display error info.
                 displayValue = 0
             }
+            historyDisplay.text = brain.outputMemory()
         }
     }
 
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
+        haveADotInANumber = false
         if let result = brain.pushOperand(displayValue) {
             displayValue = result
         } else {
@@ -50,13 +68,26 @@ class CalculatorViewController: UIViewController
         }
     }
 
+    @IBAction func displayClear(sender: UIButton) {
+        userIsInTheMiddleOfTypingANumber = false
+        haveADotInANumber = false
+        displayValue = 0
+        historyDisplay.text = "History"
+        brain.clearMemory()
+    }
+
     var displayValue: Double {
         get {
             // TODO: Homework 1: What's this?
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
         }
         set {
-            display.text = "\(newValue)"
+            var rest = newValue % 1.0
+            if rest == 0 {
+                display.text = "\(Int64(newValue))"
+            } else {
+                display.text = "\(newValue)"
+            }
             userIsInTheMiddleOfTypingANumber = false
         }
     }

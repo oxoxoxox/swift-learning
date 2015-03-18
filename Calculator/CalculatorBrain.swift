@@ -43,6 +43,9 @@ class CalculatorBrain
         learnOp(Op.BinaryOperation("÷") { $1 / $0 })
         learnOp(Op.BinaryOperation("+", +))
         learnOp(Op.BinaryOperation("−") { $1 - $0 })
+        learnOp(Op.UnaryOperation("sin", sin))
+        learnOp(Op.UnaryOperation("cos", cos))
+        learnOp(Op.UnaryOperation("π", { 3.14159 * $0}))
         learnOp(Op.UnaryOperation("√", sqrt))
 
 ////        knownOps["×"] = Op.BinaryOperation("×", { $0 * $1 })
@@ -96,6 +99,24 @@ class CalculatorBrain
             opStack.append(operation)
         }
         return evaluate()
+    }
+
+    func clearMemory() {
+        opStack.removeAll()
+        println("Memory is cleared")
+    }
+
+    func outputMemory() -> String {
+        var memoryString = ""
+        var index: Int
+        let count = opStack.count
+        for index = 0; index < count; ++index {
+            if index > 0 {
+                memoryString += " "
+            }
+            memoryString += "\(self.opStack[index])"
+        }
+        return memoryString
     }
 }
 
