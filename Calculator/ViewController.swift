@@ -16,6 +16,7 @@ class CalculatorViewController: UIViewController
 
     var userIsInTheMiddleOfTypingANumber = false
     var haveADotInANumber = false
+    var historyArray = [String]()
 
     var brain = CalculatorBrain()
 
@@ -47,13 +48,23 @@ class CalculatorViewController: UIViewController
             enter()
         }
         if let operation = sender.currentTitle {
-            if let result = brain.performOperation(operation) {
-                displayValue = result
+            let result = brain.performOperation(operation)
+
+            if nil != result {
+                historyArray.append(brain.outputMemory() + " = \(result!)")
+                if (historyArray.count >= historyDisplay.numberOfLines) {
+                    historyArray.removeAtIndex(0)
+                }
+
+                displayValue = result!
+                brain.replaceMemoryWithResult(result!)
+
+                setDisplayHistoryValue()
             } else {
                 // TODO: Homework 2: Let displayValue to be optional so that UI can display error info.
                 displayValue = 0
+                brain.replaceMemoryWithResult(0)
             }
-            historyDisplay.text = brain.outputMemory()
         }
     }
 
@@ -72,7 +83,8 @@ class CalculatorViewController: UIViewController
         userIsInTheMiddleOfTypingANumber = false
         haveADotInANumber = false
         displayValue = 0
-        historyDisplay.text = "History"
+        clearDisplayHistoryValue()
+        historyArray.removeAll(keepCapacity: false)
         brain.clearMemory()
     }
 
@@ -90,6 +102,18 @@ class CalculatorViewController: UIViewController
             }
             userIsInTheMiddleOfTypingANumber = false
         }
+    }
+
+    func setDisplayHistoryValue() {
+        var value = "History"
+        for var index = 0; index < historyArray.count; index++ {
+            value += "\n" + historyArray[index]
+        }
+        historyDisplay.text = value
+    }
+
+    func clearDisplayHistoryValue() {
+        historyDisplay.text = "History"
     }
 }
 

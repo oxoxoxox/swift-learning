@@ -96,13 +96,36 @@ class CalculatorBrain
 
     func performOperation(symblol: String) -> Double? {
         if let operation = knownOps[symblol] {
+            switch operation {
+            case .BinaryOperation(_, _):
+                if opStack.count > 2 {
+                    opStack.removeRange(Range<Int>(start: 0, end: opStack.count - 2))
+                }
+            case .UnaryOperation(_, _):
+                if opStack.count > 1 {
+                    opStack.removeRange(Range<Int>(start: 0, end: opStack.count - 1))
+                }
+            default:
+                break;
+            }
             opStack.append(operation)
         }
-        return evaluate()
+
+        var result: Double!
+        result = evaluate()
+//        opStack.append(Op.Operand(result))
+
+        return result
+    }
+
+    func replaceMemoryWithResult(result: Double) {
+        println("Replace memory with result")
+        opStack.removeAll(keepCapacity: false)
+        opStack.append(Op.Operand(result))
     }
 
     func clearMemory() {
-        opStack.removeAll()
+        opStack.removeAll(keepCapacity: false)
         println("Memory is cleared")
     }
 
